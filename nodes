@@ -1,6 +1,6 @@
 #!/bin/bash
 
-kgna --selector=karpenter.sh/capacity-type |  gawk '{ 
+kgna --selector=karpenter.sh/capacity-type -L node.k8s.aws/spot-percent-discount |  gawk '{ 
     n=split($0,a," ",b)
     line=b[0]
     line=(line a[1] b[1])
@@ -9,5 +9,6 @@ kgna --selector=karpenter.sh/capacity-type |  gawk '{
     line=(line a[7] b[7])
     line=(line a[9] b[9])
     line=(line a[10] b[10])
+    line=(line a[11] b[11])
     print line
 }'
