@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/instance: spot-fast
+  name: spot-fast-ahem
+  namespace: default
+spec:
+  replicas: 10
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: spot-fast
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: spot-fast
+    spec:
+      containers:
+      - env:
+        - name: delay
+          value: 15s
+        image: public.ecr.aws/brandonwagner/ahem:v0.0.3@sha256:83652195abe21dca110b20f20a20161aaa34c9ff117489e08b503b5586e732e0
+        name: ahem
+        resources:
+          limits:
+            memory: 512Mi
+          requests:
+            cpu: 1
+            memory: 512Mi
+      nodeSelector:
+        karpenter.sh/capacity-type: spot
+      terminationGracePeriodSeconds: 30
+      topologySpreadConstraints:
+      - labelSelector:
+          matchLabels:
+            app.kubernetes.io/instance: spot-fast
+        maxSkew: 1
+        topologyKey: topology.kubernetes.io/zone
+        whenUnsatisfiable: DoNotSchedule

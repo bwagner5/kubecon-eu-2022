@@ -1,0 +1,5 @@
+#!/bin/bash
+
+for d in $(ls workloads); do
+    kubectl scale deploy "$(echo ${d} | cut -d'.' -f1)" --replicas=0
+done

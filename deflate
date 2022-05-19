@@ -1,0 +1,77 @@
+#!/bin/bash
+
+## 10-100
+SPEED=20
+
+echo -en "\n🐶> kubectl scale deployment/gpu-nvidia --replicas=0"  | pv -qL "${SPEED}"
+read -n 1 -s
+echo -e "\n"
+kubectl scale deployment/gpu-nvidia --replicas=0
+echo -en "\n🐶> "
+read -n 1 -s
+
+echo -en "kubectl scale deployment/inflate --replicas=0" | pv -qL "${SPEED}"
+read -n 1 -s
+echo -e "\n"
+kubectl scale deployment/inflate --replicas=0
+echo -en "\n🐶> "
+read -n 1 -s
+
+echo -en "kubectl scale deployment/inflate-arm64 --replicas=0" | pv -qL "${SPEED}"
+read -n 1 -s
+echo -e "\n"
+kubectl scale deployment/inflate-arm64 --replicas=0
+echo -en "\n🐶> "
+read -n 1 -s
+
+echo -en "kubectl scale deployment/inflate-on-demand --replicas=0" | pv -qL "${SPEED}"
+read -n 1 -s
+echo -e "\n"
+kubectl scale deployment/inflate-on-demand --replicas=0
+echo -en "\n🐶> "
+
+#### SPOT DEMO ####
+read -n 1 -s
+echo -en "kubectl get pods -A | grep aws-node-termination-handler" | pv -qL "${SPEED}"
+read -n 1 -s
+kubectl get pods -A | grep aws-node-termination-handler
+echo -e "\n"
+echo -en "\n🐶> "
+read -n 1 -s
+
+echo -en "brew install aws/tap/ec2-spot-interrupter &>/dev/null" | pv -qL "${SPEED}"
+read -n 1 -s
+sleep 2
+echo -en "\n🐶> "
+read -n 1 -s
+echo -en "ec2-spot-interrupter --interactive" | pv -qL "${SPEED}"
+read -n 1 -s
+ec2-spot-interrupter --interactive
+
+echo -e "\n"
+echo -en "\n🐶> "
+read -n 1 -s
+
+# echo -en "kubectl scale deployment/spot-fast-ahem --replicas=0" | pv -qL "${SPEED}"
+# read -n 1 -s
+# kubectl scale deployment/spot-fast-ahem --replicas=0
+# echo -e "\n"
+# echo -en "\n🐶> "
+# read -n 1 -s
+
+# echo -en "kubectl scale deployment/spot-slow-ahem --replicas=0" | pv -qL "${SPEED}"
+# read -n 1 -s
+# echo -e "\n"
+# kubectl scale deployment/spot-slow-ahem --replicas=0
+# echo -en "\n🐶> "
+# read -n 1 -s
+
+echo -en "kubectl scale deployment/spot-od-split-ahem --replicas=0"  | pv -qL "${SPEED}"
+read -n 1 -s
+echo -e "\n"
+kubectl scale deployment/spot-od-split-ahem --replicas=0
+
+echo -en "\n🐶> "
+read -n 1 -s
+read -n 1 -s
+

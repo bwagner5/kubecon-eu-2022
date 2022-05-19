@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inflate-on-demand
+spec:
+  replicas: 10
+  selector:
+    matchLabels:
+      app: inflate-on-demand
+  template:
+    metadata:
+      labels:
+        app: inflate-on-demand
+    spec:
+      containers:
+      - image: public.ecr.aws/eks-distro/kubernetes/pause:3.2
+        name: inflate-on-demand
+        resources:
+          requests:
+            cpu: "1"
+            memory: 256M
+      nodeSelector:
+        karpenter.sh/capacity-type: on-demand

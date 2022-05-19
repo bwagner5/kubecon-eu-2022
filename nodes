@@ -1,0 +1,13 @@
+#!/bin/bash
+
+kgna --selector=karpenter.sh/capacity-type |  gawk '{ 
+    n=split($0,a," ",b)
+    line=b[0]
+    line=(line a[1] b[1])
+    line=(line a[2] b[2])
+    line=(line a[6] b[6])
+    line=(line a[7] b[7])
+    line=(line a[9] b[9])
+    line=(line a[10] b[10])
+    print line
+}'
