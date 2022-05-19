@@ -106,5 +106,11 @@ less workloads/gpu-nvidia.yaml
 
 echo -en "\n🐶> "
 read -n 1 -s
+echo -en "kubectl logs deployment/karpenter -n karpenter -c controller | tail" | pv -qL "${SPEED}"
+read -n 1 -s
+kubectl logs deployment/karpenter -n karpenter -c controller | tail | less
+
+echo -en "\n🐶> "
+read -n 1 -s
 
 ./deflate
