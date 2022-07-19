@@ -4,113 +4,40 @@ clear
 ## 10-100
 SPEED=20
 
+if [[ $# -eq 1 ]] && [[ $1 == "reset" ]]; then
+    kubectl scale deploy/inflate-arm64 deploy/inflate-on-demand deploy/gpu-nvidia deploy/inflate --replicas=0
+    exit 0
+fi
+
+function cmd() {
+    local cmd="${1}"
+    if [[ ! -z ${cmd} ]]; then
+        echo -en "${cmd}" | pv -qL "${SPEED}"
+        read -n 1 -s
+        echo -e "\n"
+        eval $cmd
+        echo -en "\n🐶> "
+        read -n 1 -s
+    else
+        echo -en "\n🐶> "
+        read -n 1 -s
+    fi
+}
+
 cat karpenter-banner.ascii
 echo -e "\n ================================================================================== \n"
 
-echo -en "🐶> "
-read -n 1 -s
-
-echo -en "kubectl get provisioner default | less" | pv -qL "${SPEED}"
-read -n 1 -s
-less provisioners/default.yaml
-echo -en "\n🐶> "
-read -n 1 -s
-
-echo -en "kubectl scale deployment/inflate --replicas=10" | pv -qL "${SPEED}"
-read -n 1 -s
-echo -e "\n"
-kubectl scale deployment/inflate --replicas=10
-echo -en "\n🐶> "
-read -n 1 -s
-echo -en "kubectl get deployment inflate -o yaml | less" | pv -qL "${SPEED}"
-read -n 1 -s
-less workloads/inflate.yaml
-
-echo -en "\n🐶> "
-read -n 1 -s
-echo -en "kubectl logs deployment/karpenter -n karpenter -c controller | tail" | pv -qL "${SPEED}"
-read -n 1 -s
-kubectl logs deployment/karpenter -n karpenter -c controller | tail | less
-
-echo -en "\n🐶> "
-read -n 1 -s
-echo -en "kubectl scale deployment/inflate-arm64 --replicas=10" | pv -qL "${SPEED}"
-read -n 1 -s
-echo -e "\n"
-kubectl scale deployment/inflate-arm64 --replicas=10
-echo -en "\n🐶> "
-read -n 1 -s
-echo -en "kubectl get deployment inflate-arm64 -o yaml | less" | pv -qL "${SPEED}"
-read -n 1 -s
-less workloads/inflate-arm64.yaml
-
-echo -en "\n🐶> "
-read -n 1 -s
-echo -en "kubectl scale deployment/inflate-on-demand --replicas=10" | pv -qL "${SPEED}"
-read -n 1 -s
-echo -e "\n"
-kubectl scale deployment/inflate-on-demand --replicas=10
-echo -en "\n🐶> "
-read -n 1 -s
-echo -en "kubectl get deployment inflate-on-demand -o yaml | less" | pv -qL "${SPEED}"
-read -n 1 -s
-less workloads/inflate-on-demand.yaml
-
-# echo -en "\n🐶> "
-# read -n 1 -s
-# echo -en "kubectl scale deployment/spot-fast-ahem --replicas=10" | pv -qL "${SPEED}"
-# read -n 1 -s
-# echo -e "\n"
-# kubectl scale deployment/spot-fast-ahem --replicas=10
-# echo -en "\n🐶> "
-# read -n 1 -s
-# echo -en "kubectl get deployment spot-fast-ahem -o yaml | less" | pv -qL "${SPEED}"
-# read -n 1 -s
-# less workloads/spot-fast-ahem.yaml
-
-# echo -en "\n🐶> "
-# read -n 1 -s
-# echo -en "kubectl scale deployment/spot-slow-ahem --replicas=10" | pv -qL "${SPEED}"
-# read -n 1 -s
-# echo -e "\n"
-# kubectl scale deployment/spot-slow-ahem --replicas=10
-# echo -en "\n🐶> "
-# read -n 1 -s
-# echo -en "kubectl get deployment spot-slow-ahem -o yaml | less" | pv -qL "${SPEED}"
-# read -n 1 -s
-# less workloads/spot-slow-ahem.yaml
-
-echo -en "\n🐶> "
-read -n 1 -s
-echo -en "kubectl scale deployment/spot-od-split-ahem --replicas=10"  | pv -qL "${SPEED}"
-read -n 1 -s
-echo -e "\n"
-kubectl scale deployment/spot-od-split-ahem --replicas=10
-echo -en "\n🐶> "
-read -n 1 -s
-echo -en "kubectl get deployment spot-od-split-ahem -o yaml | less" | pv -qL "${SPEED}"
-read -n 1 -s
-less workloads/spot-od-split-ahem.yaml
-
-echo -en "\n🐶> "
-read -n 1 -s
-echo -en "kubectl scale deployment/gpu-nvidia --replicas=2" | pv -qL "${SPEED}"
-read -n 1 -s
-echo -e "\n"
-kubectl scale deployment/gpu-nvidia --replicas=2
-echo -en "\n🐶> "
-read -n 1 -s
-echo -en "kubectl get deployment gpu-nvidia -o yaml | less" | pv -qL "${SPEED}"
-read -n 1 -s
-less workloads/gpu-nvidia.yaml
-
-echo -en "\n🐶> "
-read -n 1 -s
-echo -en "kubectl logs deployment/karpenter -n karpenter -c controller | tail" | pv -qL "${SPEED}"
-read -n 1 -s
-kubectl logs deployment/karpenter -n karpenter -c controller | tail | less
-
-echo -en "\n🐶> "
-read -n 1 -s
-
-./deflate
+cmd ""
+cmd "kubectl get provisioner default -o yaml | less"
+cmd "kubectl get awsnodetemplate default -o yaml | less"
+cmd "kubectl scale deployment inflate --replicas=100"
+cmd "kubectl get deployment inflate -o yaml | less"
+cmd "kubectl scale deployment inflate --replicas=0"
+cmd "kubectl scale deployment/inflate-arm64 --replicas=100"
+cmd "kubectl get deployment inflate-arm64 -o yaml | less"
+cmd "kubectl scale deployment/inflate-on-demand --replicas=100"
+cmd "kubectl scale deployment/gpu-nvidia --replicas=2"
+cmd "watch kgna"
+cmd "kubectl scale deployment/inflate-arm64 --replicas=0"
+cmd "kubectl scale deployment/inflate-on-demand --replicas=0"
+cmd "kubectl scale deployment/gpu-nvidia --replicas=0"
